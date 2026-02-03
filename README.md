@@ -1,12 +1,34 @@
-# GenAI Banking Platform (Azure AKS)
+# GenAI Workflow Platform (Azure AKS)
 
-A cloud-native GenAI-ready platform built to demonstrate production-grade software engineering, DevOps automation, and scalable GenAI architecture in an enterprise banking context. This project is designed as a **platform**, not a one-off GenAI demo.
+A cloud-native GenAI-ready platform built to demonstrate **production-grade software engineering**, **DevOps automation**, and **scalable GenAI architecture**. The platform is validated using an **enterprise banking use case**, but intentionally designed as **reusable building blocks** rather than a one-off GenAI demo.
 
 - Cloud-native GenAI-ready platform deployed on Azure Kubernetes Service (AKS)
 - Microservices architecture with API Gateway and RAG Service (FastAPI)
 - Infrastructure provisioned using Terraform and containerized with Docker
 - Designed for enterprise banking environments with security and scalability in mind
 - Ready to integrate Azure OpenAI and vector search (RAG) without redesign
+
+---
+
+## Why This Project Matters
+
+This repository is designed to showcase how **GenAI workloads can be integrated responsibly into enterprise environments** such as banking:
+
+- API-first, cloud-native architecture
+- Clear separation of concerns between platform and GenAI logic
+- Designed for regulated environments (security, RBAC, auditability)
+- Ready for Azure OpenAI, RAG, and agentic workflows without redesign
+
+---
+
+## Key Capabilities
+
+- Cloud-native GenAI platform on **Azure Kubernetes Service (AKS)**
+- **API Gateway + RAG Service** (FastAPI microservices)
+- Infrastructure as Code using **Terraform**
+- Containerized workloads with **Docker**
+- Designed for **Azure DevOps CI/CD pipelines**
+- Extensible to **RAG pipelines and agentic workflows**
 
 ---
 
@@ -74,6 +96,37 @@ can evolve independently without impacting consumers.
 
 ---
 
+## RAG Examples (Conceptual & Practical)
+
+```text
+rag/examples/
+├── langchain_rag_example.py
+└── llamaindex_rag_example.py
+```
+
+Demonstrates:
+- Chunking and embedding
+- Vector retrieval
+- Prompt augmentation
+
+---
+
+## Agentic Workflow Examples
+
+```text
+agentic/examples/
+├── loan_approval_agent.py
+├── multi_agent_finance.py
+├── crewai_summary_agent.py
+```
+
+Demonstrates:
+- Agent roles
+- Multi-step workflows
+- Orchestration concepts
+
+---
+
 ## ☁️ Cloud & DevOps Stack
 
 - Azure Kubernetes Service (AKS)
@@ -82,23 +135,44 @@ can evolve independently without impacting consumers.
 - Azure Container Registry (ACR)
 - Python (FastAPI)
 - Microservices architecture
+- Designed to integrate with Azure DevOps CI/CD pipelines
 
 ---
 
 ## 📁 Repository Structure
 
 ```text
-genai-banking-platform/
+genai-workflow-platform/
 ├── infra/
 │   └── terraform/        # Azure infrastructure (AKS, Search, etc.)
 ├── services/
 │   ├── api-gateway/      # FastAPI API Gateway
 │   ├── rag-service/      # RAG service (simulated)
 │   └── agent-service/   # Reserved for agentic workflows
+├── rag/
+│   └── examples/                  # RAG framework examples (conceptual)
+│       ├── langchain_rag_example.py
+│       └── llamaindex_rag_example.py│
+├── agentic/
+│   └── examples/                  # Agentic workflow examples
+│       ├── loan_approval_agent.py
+│       ├── multi_agent_finance.py
+│       └── crewai_summary_agent.py
 ├── k8s/                  # Kubernetes manifests
 ├── docs/                 # Architecture & design notes
 └── README.md
 ```
+
+## Repository Structure Philosophy
+
+This repository intentionally separates:
+
+- **Production services** (`services/`) used in deployment on AKS
+- **GenAI pattern exploration** (`rag/examples`, `agentic/examples`)
+- **Infrastructure and platform concerns** (`infra/`, `k8s/`)
+
+This approach allows GenAI capabilities to evolve independently
+without impacting API contracts or production workloads.
 
 ---
 
@@ -144,12 +218,3 @@ In a full production setup:
 - No changes are required to the API Gateway or client integrations
 
 This design ensures low-risk evolution from prototype to production.
-
-## Why This Project
-
-This project demonstrates:
-
-- Engineering-first GenAI platform design
-- Cloud-native architecture suitable for regulated environments
-- Ability to deliver under real-world constraints
-- Clear separation of concerns and reusable building blocks

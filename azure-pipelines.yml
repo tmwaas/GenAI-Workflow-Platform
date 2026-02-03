@@ -1,0 +1,76 @@
+trigger:
+  - main
+
+variables:
+  imageTag: $(Build.BuildId)
+  acrLoginServer: "<ACR_LOGIN_SERVER>"     
+  apiImageName: "api-gateway"
+  ragImageName: "rag-service"
+
+pool:
+  vmImage: "ubuntu-latest"
+
+stages:
+- stage: BuildAndPush
+  jobs:
+  - job: Build
+    steps:
+    - checkout: self
+
+    - task: Docker@2
+      displayName: "Build & Push api-gateway"
+      inputs:
+        containerRegistry: "<ACR_SERVICE_CONNECTION_NAME>"
+        repository: "$(apiImageName)"
+        command: "buildAndPush"
+        Dockerfile: "services/api-gateway/Dockerfile"
+        buildContext: "services/api-gateway"
+        tags: |
+          $(imageTag)
+
+    - task: Docker@2
+      displayName: "Build & Push rag-service"
+      inputs:
+        containerRegistry: "<ACR_SERVICE_CONNECTION_NAME>"
+        repository: "$(ragImageName)"
+        command: "buildAndPush"
+        Dockerfile: "services/rag-service/Dockerfile"
+        buildContext: "services/rag-service"
+        tags: |
+          $(imageTag)
+
+- stage: DeployToAKS
+  dependsOn: BuildAndPush
+  jobs:
+  - job: Deploy
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: "Get AKS credentials"
+      inputs:
+        azureSubscription: "<AZURE_RM_SERVICE_CONNECTION_NAME>"
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az aks get-credentials -g <AKS_RESOURCE_GROUP> -n <AKS_CLUSTER_NAME> --overwrite-existing
+          kubectl get nodes
+
+    - task: Bash@3
+      displayName: "Patch images + apply manifests"
+      inputs:
+        targetType: inline
+        script: |
+          set -e
+
+          # Patch image tags in k8s manifests (simple approach)
+          # Pastikan di yaml ada placeholder: IMAGE_TAG
+          sed -i "s|{{ACR}}|$(acrLoginServer)|g" k8s/api-gateway.yaml
+          sed -i "s|{{TAG}}|$(imageTag)|g" k8s/api-gateway.yaml
+
+          sed -i "s|{{ACR}}|$(acrLoginServer)|g" k8s/rag.yaml
+          sed -i "s|{{TAG}}|$(imageTag)|g" k8s/rag.yaml
+
+          kubectl apply -f k8s/
+          kubectl rollout status deploy/api-gateway --timeout=180s
+          kubectl rollout status deploy/rag-service --timeout=180s

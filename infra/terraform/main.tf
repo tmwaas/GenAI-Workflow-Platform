@@ -1,10 +1,11 @@
 provider "azurerm" {
   features {}
+  resource_provider_registrations = "none"  
 }
 
-# Ambil data RG (Ganti name-nya dengan hasil 'az group list --query "[].name" -o tsv')
+# See the RG name by using this command: 'az group list --query "[].name" -o tsv'
 data "azurerm_resource_group" "rg" {
-  name = "1-066e7b12-playground-sandbox" 
+  name = "1-da70a4dc-playground-sandbox" 
 }
 
 # Azure AI Search
